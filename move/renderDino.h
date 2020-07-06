@@ -1,1 +1,0 @@
-const int stayDino[20][20];
