@@ -16,12 +16,13 @@ static const int height = 600;
 int main(int argc, char **argv) {
     SDL_Init(SDL_INIT_VIDEO);
     SDL_Window *window = SDL_CreateWindow("Dino", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL);
-    srand(time(NULL));
+    // srand(time(NULL));
 
-    Canvas canvas = new_Canvas(); 
+    Canvas *canvas;
+    canvas = malloc(sizeof(Canvas));
+    canvas = new_Canvas(window);
 
-    canvas.init();
-    canvas.render(window);
+    canvas->render(canvas);
 
     SDL_DestroyWindow(window);
     SDL_Quit();

@@ -1,39 +1,45 @@
 #include "SDL2/SDL.h"
 #include "../dino/dino.c"
+#include "../row/row.c"
 
-typedef struct {
-    void (*init)();
-    void (*render)(SDL_Window *window);
+typedef struct Canvas{
+    void (*render)(struct Canvas *);
+    SDL_Window *window;
+    bool running;
+    double msecs;
 } Canvas;
 
-static void init() { }
-
-static void render(SDL_Window *window) {
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+static void render(struct Canvas * canvas) {
+    SDL_Renderer *renderer = SDL_CreateRenderer(canvas->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     struct timeval start, stop;
-    bool running = true;
-    double msecs = 0;
     SDL_Event event;
 
     gettimeofday(&start, NULL);
 
-    Dino *dino = new_Dino();
+    struct Dino *dino = NULL;
+    dino = malloc(sizeof(Dino));
+    dino = new_Dino();
 
-    while(running) {
+    struct Row *row = NULL;
+    row = malloc(sizeof(Row));
+    row = new_Row(800, 2);
+
+    while(canvas->running) {
         while(SDL_PollEvent(&event)) {
             if(event.type == SDL_QUIT) {
-                running = false;
+                canvas->running = false;
             }
         }
 
         gettimeofday(&stop, NULL);
-        msecs = (double)(stop.tv_usec - start.tv_usec) / 1000000 + (double)(stop.tv_sec - start.tv_sec);
+        canvas->msecs = (double)(stop.tv_usec - start.tv_usec) / 1000000 + (double)(stop.tv_sec - start.tv_sec);
 
-        if (msecs > 1.0 / 5.0) {
+        if (canvas->msecs > 1.0 / 5.0) {
             gettimeofday(&start, NULL);
             SDL_RenderClear(renderer);
 
             dino->start(dino, renderer);
+            row->startt(row, renderer);
 
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
             SDL_RenderPresent(renderer);
@@ -41,14 +47,21 @@ static void render(SDL_Window *window) {
     }
 
     free(dino);
+    free(row);
+    dino = NULL;
+    row = NULL;
     SDL_DestroyRenderer(renderer);
 }
 
-Canvas new_Canvas() {
-    Canvas c;
+Canvas* new_Canvas(SDL_Window *window) {
+    Canvas *canvas = NULL;
+    canvas = malloc(sizeof(Canvas));
 
-    c.init = init;
-    c.render = render;
+    canvas->running = true;
+    canvas->msecs = 0;
 
-    return c;
+    canvas->window = window;
+    canvas->render = render;
+
+    return canvas;
 }

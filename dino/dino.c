@@ -1,9 +1,8 @@
 #include "SDL2/SDL.h"
 
-typedef struct {
+typedef struct Dino {
     void (*start)(struct Dino *, SDL_Renderer *);
     void (*init)(struct Dino *);
-    void (*render)(SDL_Renderer *);
     int step;
 } Dino;
 
@@ -18,7 +17,7 @@ void drowPicture(SDL_Renderer *renderer, const int *picture, int x0, int y0, int
 
 static int step = 0;
 
-static void start(Dino *dino, SDL_Renderer* renderer) {
+static void start(struct Dino *dino, SDL_Renderer* renderer) {
     int *dinoMotion = *stayDino;
 
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
@@ -37,13 +36,11 @@ static void start(Dino *dino, SDL_Renderer* renderer) {
 }
 
 Dino* new_Dino() {
-    Dino *dino;
-
-    void render(SDL_Renderer* renderer) {}
+    Dino *dino = NULL;
+    dino = malloc(sizeof(Dino));
 
     dino->start = start;
     dino->step = step;
-    dino->render = render;
 
     return dino;
 }
