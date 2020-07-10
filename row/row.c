@@ -5,34 +5,57 @@ typedef struct Row {
     int rowWidth;
     int size;
     int *rowMas;
+    int step;
 } Row;
 
-
-static void createRow() {
-
-}
-
 static void startt(struct Row *row, SDL_Renderer* renderer) {
-    // SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
-    // drowPicture(renderer, row->rowMas, 100, 100, 2, 20, 20);
+    drowPicture(renderer, row->rowMas, -row->step, 160, row->size, row->rowWidth, 8);
+
+    if (row->step == row->rowWidth / 2) {
+
+        int a = 0;
+        for(int w = 0; w < 8; w++) {
+            for(int m = 0; m < row->rowWidth / 20; m++) {
+                for(int h = 0; h < 20; h++) {
+                    *(row->rowMas + a) = row2[w][h];
+                    a++;
+                }
+            }
+        }
+
+        row->step = 0;
+    }
+
+    row->step++;
 }
 
 Row* new_Row(int windowWidth, int size) {
     Row *row = NULL;
     row = malloc(sizeof(Row));
-    // int rowWidth =  windowWidth / size + 1;
-    // int *rowMas[2];
 
-    // int i = 0;
-    // for(i = 0; i < 2; i++) {
-        // rowMas[0] = *row1;
-        // (*rowMas)[1] = *row1;
-    // }
+    int koefGostWidth = 2;
+    int rowWidth =  windowWidth / size * koefGostWidth + 1;
 
-    // row->rowMas = rowMas;
-    // row->rowWidth = rowWidth;
-    // row->size = size;
+    int *rowMas = NULL;
+
+    rowMas = malloc(rowWidth * 8 * sizeof(int));
+
+    int a = 0;
+    for(int w = 0; w < 8; w++) {
+        for(int m = 0; m < rowWidth / 20; m++) {
+            for(int h = 0; h < 20; h++) {
+                *(rowMas + a) = row2[w][h];
+                a++;
+            }
+        }
+    }
+
+    row->step = 0;
+    row->rowMas = rowMas;
+    row->rowWidth = rowWidth;
+    row->size = size;
     row->startt = startt;
 
     return row;
