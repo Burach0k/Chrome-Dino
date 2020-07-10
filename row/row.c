@@ -8,6 +8,24 @@ typedef struct Row {
     int step;
 } Row;
 
+static void createNewRow(struct Row *row) {
+    for(int x = 0; x < row->rowWidth / 20; x++) {
+        int getRandomRow = rand() % (3 - 1 + 1) + 1;
+
+        for (int y = 0; y < 8; y++) {
+            for (int w = 0; w < 20; w++) {
+                if (getRandomRow == 1) {
+                    *(row->rowMas + x*20 + y * row->rowWidth + w) = row1[y][w];
+                } else if (getRandomRow == 2) {
+                    *(row->rowMas + x*20 + y * row->rowWidth + w) = row2[y][w];
+                } else if (getRandomRow == 3) {
+                    *(row->rowMas + x*20 + y * row->rowWidth + w) = row3[y][w];
+                }
+            }
+        }
+    }
+}
+
 static void startt(struct Row *row, SDL_Renderer* renderer) {
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
@@ -15,15 +33,7 @@ static void startt(struct Row *row, SDL_Renderer* renderer) {
 
     if (row->step == row->rowWidth / 2) {
 
-        int a = 0;
-        for(int w = 0; w < 8; w++) {
-            for(int m = 0; m < row->rowWidth / 20; m++) {
-                for(int h = 0; h < 20; h++) {
-                    *(row->rowMas + a) = row2[w][h];
-                    a++;
-                }
-            }
-        }
+        createNewRow(row);
 
         row->step = 0;
     }
@@ -42,21 +52,13 @@ Row* new_Row(int windowWidth, int size) {
 
     rowMas = malloc(rowWidth * 8 * sizeof(int));
 
-    int a = 0;
-    for(int w = 0; w < 8; w++) {
-        for(int m = 0; m < rowWidth / 20; m++) {
-            for(int h = 0; h < 20; h++) {
-                *(rowMas + a) = row2[w][h];
-                a++;
-            }
-        }
-    }
-
     row->step = 0;
     row->rowMas = rowMas;
     row->rowWidth = rowWidth;
     row->size = size;
     row->startt = startt;
+
+    createNewRow(row);
 
     return row;
 }
