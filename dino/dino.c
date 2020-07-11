@@ -19,21 +19,21 @@ void drowPicture(SDL_Renderer *renderer, const int *picture, int x0, int y0, int
 static int step = 0;
 
 static void start(struct Dino *dino, SDL_Renderer* renderer) {
-    int *dinoMotion = *stayDino;
-
     SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    int speed = 3;
+
+    int speed = 5;
     if (dino->step < speed) {
-        dinoMotion = *stayDino;
-    } else if (dino->step < speed*2) {
-        dinoMotion = *runDino1;
-    } else if (dino->step < speed*3) {
-        dinoMotion = *runDino2;
-    } else {
-        dino->step = 0;
+        drowPicture(renderer, *stayDino, 100, 100, dino->size, 20, 20);
+    } else if (dino->step < speed * 2) {
+        drowPicture(renderer, *runDino1, 100, 100, dino->size, 20, 20);
+    } else if (dino->step < speed * 3) {
+        drowPicture(renderer, *runDino2, 100, 100, dino->size, 20, 20);
+
+        if (dino->step == speed * 3 - 1) {
+            dino->step = 0;
+        }
     }
 
-    drowPicture(renderer, dinoMotion, 100, 100, dino->size, 20, 20);
     dino->step++;
 }
 

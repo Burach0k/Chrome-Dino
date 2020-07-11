@@ -39,7 +39,7 @@ static void render(struct Canvas * canvas) {
             gettimeofday(&start, NULL);
             SDL_RenderClear(renderer);
 
-            // dino->start(dino, renderer);
+            dino->start(dino, renderer);
             row->startt(row, renderer);
 
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
