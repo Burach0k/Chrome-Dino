@@ -1,6 +1,7 @@
 #include "SDL2/SDL.h"
-#include "../dino/dino.c"
-#include "../row/row.c"
+#include "../dino/dino.h"
+#include "../row/row.h"
+#include <stdbool.h>
 
 typedef struct Canvas{
     void (*render)(struct Canvas *);
@@ -8,6 +9,22 @@ typedef struct Canvas{
     bool running;
     double msecs;
 } Canvas;
+
+void drowPicture(SDL_Renderer *renderer, const int *picture, int x0, int y0, int h, int sizex, int sizey) {
+    for (int i = 0; i < sizey; i++)
+        for (int j = 0; j < sizex; j++)
+            if(*(picture + i*sizex + j) == 1) {
+                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                SDL_Rect rect = { x0  + j*h, y0  + i*h, h, h };
+                SDL_RenderFillRect(renderer, &rect);
+            } else if (*(picture + i*sizex + j) == 2) {
+                SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+                SDL_Rect rect = { x0  + j*h, y0  + i*h, h, h };
+                SDL_RenderFillRect(renderer, &rect);
+            }
+
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+}
 
 static void render(struct Canvas * canvas) {
     SDL_Renderer *renderer = SDL_CreateRenderer(canvas->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -19,7 +36,7 @@ static void render(struct Canvas * canvas) {
 
     struct Dino *dino = NULL;
     dino = malloc(sizeof(Dino));
-    dino = new_Dino(size);
+    dino = new_Dino(size, 100, 110);
 
     struct Row *row = NULL;
     row = malloc(sizeof(Row));
@@ -39,10 +56,9 @@ static void render(struct Canvas * canvas) {
             gettimeofday(&start, NULL);
             SDL_RenderClear(renderer);
 
+            row->start(row, renderer);
             dino->start(dino, renderer);
-            row->startt(row, renderer);
 
-            SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
             SDL_RenderPresent(renderer);
         }
     }

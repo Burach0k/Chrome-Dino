@@ -4,11 +4,7 @@
 #include <stdbool.h>
 #include <sys/time.h>
 #include <time.h>
-
-#include "./viwe/dino/viweDino.h"
-#include "./viwe/dino/viweDino.c"
-#include "./viwe/row/row.c"
-#include "./canvas/canvas.c"
+#include "./canvas/canvas.h"
 
 static const int width = 800;
 static const int height = 600;
