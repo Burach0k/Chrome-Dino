@@ -20,7 +20,7 @@ typedef struct Dino {
 } Dino;
 
 static void start(struct Dino *dino, SDL_Renderer* renderer) {
-    if (dino->event == 1) {
+    if (dino->event == JUMP) {
         dino->jump(dino);
     }
 
