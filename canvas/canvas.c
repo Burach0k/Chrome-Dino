@@ -2,6 +2,8 @@
 #include "../dino/dino.h"
 #include "../row/row.h"
 #include <stdbool.h>
+#include <sys/time.h>
+#include <ncurses.h>
 
 typedef struct Canvas{
     void (*render)(struct Canvas *);
@@ -46,6 +48,14 @@ static void render(struct Canvas * canvas) {
         while(SDL_PollEvent(&event)) {
             if(event.type == SDL_QUIT) {
                 canvas->running = false;
+            }
+
+            if(event.type == SDL_KEYDOWN) {
+                switch(event.key.keysym.sym) {
+                    case SDLK_UP:
+                        dino->event = JUMP;
+                        break;
+                }
             }
         }
 

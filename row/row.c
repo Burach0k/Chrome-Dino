@@ -1,5 +1,6 @@
 #include "SDL2/SDL.h"
 #include "../viwe/row/row.h"
+#include "../canvas/canvas.h"
 
 typedef struct Row {
     void (*start)(struct Row *, SDL_Renderer *);
