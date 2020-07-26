@@ -1,9 +1,10 @@
-#include "SDL2/SDL.h"
+#include <SDL2/SDL.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <sys/time.h>
 #include <time.h>
+
 #include "./canvas/canvas.h"
 
 static const int width = 800;

@@ -1,4 +1,5 @@
-#include "SDL2/SDL.h"
+#include <SDL2/SDL.h>
+
 #include "../viwe/dino/viweDino.h"
 #include "../canvas/canvas.h"
 
@@ -15,6 +16,9 @@ typedef struct Dino {
     int x0;
     int y0;
     int speed;
+    int height;
+    int width;
+    int* picture;
     float jumpValue;
     Event event;
 } Dino;
@@ -25,16 +29,18 @@ static void start(struct Dino *dino, SDL_Renderer* renderer) {
     }
 
     if (dino->step < dino->speed) {
-        drowPicture(renderer, *stayDino, dino->x0, dino->y0, dino->pictureSize, 20, 20);
+        dino->picture = *stayDino;
     } else if (dino->step < dino->speed * 2) {
-        drowPicture(renderer, *runDino1, dino->x0, dino->y0, dino->pictureSize, 20, 20);
+        dino->picture = *runDino1;
     } else if (dino->step < dino->speed * 3) {
-        drowPicture(renderer, *runDino2, dino->x0, dino->y0, dino->pictureSize, 20, 20);
+        dino->picture = *runDino2;
 
         if (dino->step == dino->speed * 3 - 1) {
             dino->step = 0;
         }
     }
+
+    drowPicture(renderer, dino->picture, dino->x0, dino->y0, dino->pictureSize, 20, 20);
 
     dino->step++;
 }
@@ -59,10 +65,13 @@ Dino* new_Dino(int pictureSize, int x0, int y0) {
     dino->step = 0;
     dino->x0 = x0;
     dino->y0 = y0;
+    dino->height = 20 * pictureSize;
+    dino->width = 20 * pictureSize;
     dino->speed = 5;
     dino->jump = jump;
     dino->jumpValue = -10;
     dino->event = RUN;
+    dino->picture = *stayDino;
 
     return dino;
 }

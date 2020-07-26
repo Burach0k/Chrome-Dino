@@ -38,18 +38,18 @@ static void start(struct Row *row, SDL_Renderer* renderer) {
     drowPicture(renderer, row->firstRow, row->stepForFirstRow, 160, row->pictureSize, row->rowWidth, row->rowHeight);
     drowPicture(renderer, row->secondRow, row->stepForSecondRow, 160, row->pictureSize, row->rowWidth, row->rowHeight);
 
-    if (row->stepForFirstRow == - row->rowWidth) {
+    if (row->stepForFirstRow <= - row->rowWidth) {
         createNewRow(row, row->firstRow);
         row->stepForFirstRow = row->rowWidth;
     }
 
-    if (row->stepForSecondRow == - row->rowWidth) {
+    if (row->stepForSecondRow <= - row->rowWidth) {
         createNewRow(row, row->secondRow);
         row->stepForSecondRow = row->rowWidth;
     }
 
-    row->stepForFirstRow--;
-    row->stepForSecondRow--;
+    row->stepForFirstRow -= row->rowStep;
+    row->stepForSecondRow -= row->rowStep;
 }
 
 Row* new_Row(int windowWidth, int pictureSize) {
@@ -67,7 +67,7 @@ Row* new_Row(int windowWidth, int pictureSize) {
 
     row->stepForFirstRow = 0;
     row->stepForSecondRow = rowWidth;
-    row->rowStep = 1;
+    row->rowStep = 2;
     row->firstRow = firstRow;
     row->secondRow = secondRow;
     row->rowWidth = rowWidth;

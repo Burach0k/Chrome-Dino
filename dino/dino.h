@@ -13,7 +13,10 @@ typedef struct Dino {
     int x0;
     int y0;
     int speed;
-    int jumpValue;
+    int height;
+    int width;
+    int* picture;
+    float jumpValue;
     Event event;
 } Dino;
 
