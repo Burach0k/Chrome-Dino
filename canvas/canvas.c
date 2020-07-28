@@ -9,25 +9,42 @@
 
 typedef struct Canvas{
     void (*render)(struct Canvas *);
-    SDL_Window *window;
     bool running;
+    int width, height;
     double msecs;
+    SDL_Window *window;
+    SDL_Event event;
 } Canvas;
 
 void drowPicture(SDL_Renderer *renderer, const int *picture, int x0, int y0, int h, int sizex, int sizey) {
     for (int i = 0; i < sizey; i++)
-        for (int j = 0; j < sizex; j++)
+        for (int j = 0; j < sizex; j++) {
+            SDL_Rect rect = { x0  + j*h, y0  + i*h, h, h };
+
             if(*(picture + i*sizex + j) == 1) {
                 SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-                SDL_Rect rect = { x0  + j*h, y0  + i*h, h, h };
                 SDL_RenderFillRect(renderer, &rect);
             } else if (*(picture + i*sizex + j) == 2) {
                 SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-                SDL_Rect rect = { x0  + j*h, y0  + i*h, h, h };
                 SDL_RenderFillRect(renderer, &rect);
             }
+        }
 
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+}
+
+static void eventListener(struct Canvas * this, struct Dino* dino) {
+    while(SDL_PollEvent(&this->event)) {
+        if(this->event.type == SDL_QUIT) this->running = false;
+
+        if(this->event.type == SDL_KEYDOWN) {
+            switch(this->event.key.keysym.sym) {
+                case SDLK_UP:
+                    dino->event = JUMP;
+                    break;
+            }
+        }
+    }
 }
 
 static bool checkIntersection(struct BarrierStrip* bs, struct Barrier * barriers, int x0, int count, struct Dino* dino) {
@@ -65,50 +82,31 @@ static bool checkIntersection(struct BarrierStrip* bs, struct Barrier * barriers
     return false;
 }
 
-static void render(struct Canvas * canvas) {
-    SDL_Renderer *renderer = SDL_CreateRenderer(canvas->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+static void destroy(struct Dino *dino, struct Row *row, struct BarrierStrip * bs, SDL_Renderer *renderer) {
+    free(dino);
+    free(row);
+    free(bs);
+    SDL_DestroyRenderer(renderer);
+}
+
+static void render(struct Canvas * this) {
     struct timeval start, stop;
-    SDL_Event event;
-    int size = 3;
     bool isCrossing = false;
+    SDL_Renderer *renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    BarrierStrip * barrierStrip = new_BarrierStrip(800, 200, 175);
+    Dino *dino = new_Dino(3, 100, 110);
+    Row *row = new_Row(800, 1);
 
     gettimeofday(&start, NULL);
 
-    struct Dino *dino = NULL;
-    dino = malloc(sizeof(Dino));
-    dino = new_Dino(size, 100, 110);
-
-    struct Row *row = NULL;
-    row = malloc(sizeof(Row));
-    row = new_Row(800, 1);
-
-    struct BarrierStrip * barrierStrip = NULL;
-    barrierStrip = malloc(sizeof(BarrierStrip));
-    barrierStrip = new_BarrierStrip(800, 200, 175);
-
-    row->rowStep = 3;
-    barrierStrip->speed = 3;
-
-    while(canvas->running) {
-        while(SDL_PollEvent(&event)) {
-            if(event.type == SDL_QUIT) {
-                canvas->running = false;
-            }
-
-            if(event.type == SDL_KEYDOWN) {
-                switch(event.key.keysym.sym) {
-                    case SDLK_UP:
-                        dino->event = JUMP;
-                        break;
-                }
-            }
-        }
+    while(this->running) {
+        eventListener(this, dino);
 
         if (!isCrossing) {
             gettimeofday(&stop, NULL);
-            canvas->msecs = (double)(stop.tv_usec - start.tv_usec) / 1000000 + (double)(stop.tv_sec - start.tv_sec);
+            this->msecs = (double)(stop.tv_usec - start.tv_usec) / 1000000 + (double)(stop.tv_sec - start.tv_sec);
 
-            if (canvas->msecs > 1.0 / 60.0) {
+            if (this->msecs > 1.0 / 60.0) {
                 gettimeofday(&start, NULL);
                 SDL_RenderClear(renderer);
 
@@ -131,30 +129,25 @@ static void render(struct Canvas * canvas) {
                         barrierStrip->secondLine->coun,
                         dino);
                 }
-                
+
                 SDL_RenderPresent(renderer);
             }
         }
     }
 
-    free(dino);
-    free(row);
-    free(barrierStrip);
-    dino = NULL;
-    row = NULL;
-    barrierStrip = NULL;
-    SDL_DestroyRenderer(renderer);
+    destroy(dino, row, barrierStrip, renderer);
 }
 
-Canvas* new_Canvas(SDL_Window *window) {
+Canvas* new_Canvas(SDL_Window *window, int width, int height) {
     Canvas *canvas = NULL;
     canvas = malloc(sizeof(Canvas));
 
     canvas->running = true;
     canvas->msecs = 0;
-
     canvas->window = window;
     canvas->render = render;
+    canvas->width = width;
+    canvas->height = height;
 
     return canvas;
 }

@@ -1,25 +1,22 @@
 #include <SDL2/SDL.h>
 
-#include "../barrier/barrier.h"
+#include "./barrier/barrier.h"
+#include "./barrierLine/barrierLine.h"
 #include "../viwe/cactus/cactus.h"
 #include "../canvas/canvas.h"
 
-typedef struct BarrierLine {
-    struct Barrier * barriers;
-    int x0;
-    int coun;
-} BarrierLine;
 
 typedef struct BarrierStrip {
     struct BarrierLine *firstLine;
     struct BarrierLine *secondLine;
 
     int width;
-    int speed;
     int maxWidthForBarrier;
     int distance;
     int y0;
     int size;
+
+    float speed;
 
     void (*start)(struct BarrierStrip*, SDL_Renderer*, int maxWidth);
 } BarrierStrip;
@@ -65,9 +62,9 @@ static void renderBarriers(struct BarrierLine *bl, int size, SDL_Renderer* rende
 static void setBarrierValues(struct BarrierLine* bl, int width, int minWidth, int y0) {
     int randomDistance = minWidth + rand() % (100 - 1 + 1) + 1;
 
-    if (bl->x0 - (randomDistance + 20) > 0) {
-        Barrier bb = getRandomBarrier();
-        *(bl->barriers + bl->coun) = bb;
+    if (bl->x0 <= width && bl->x0 - (randomDistance + 20) > 0) {
+        Barrier rb = getRandomBarrier();
+        *(bl->barriers + bl->coun) = rb;
         (bl->barriers + bl->coun)->x0 = width - bl->x0 + randomDistance;
         (bl->barriers + bl->coun)->y0 = y0 - (bl->barriers + bl->coun)->height * 2;
 
@@ -79,9 +76,8 @@ static void setBarrierValues(struct BarrierLine* bl, int width, int minWidth, in
     }
 }
 
-static void generateBarriers(struct BarrierStrip*  this, int minWidth) {
+static void generateBarriers(struct BarrierStrip* this, int minWidth) {
     if (this->distance >= minWidth) {
-
         setBarrierValues(this->firstLine, this->width, minWidth, this->y0);
         setBarrierValues(this->secondLine, this->width, minWidth, this->y0);
 
@@ -92,10 +88,9 @@ static void generateBarriers(struct BarrierStrip*  this, int minWidth) {
 }
 
 static void start(struct BarrierStrip*  this, SDL_Renderer* renderer, int minWidth) {
-
     generateBarriers(this, minWidth);
     renderBarriers(this->firstLine, this->size, renderer);
-    // renderBarriers(this->secondLine, renderer);
+    renderBarriers(this->secondLine, this->size, renderer);
 
     this->firstLine->x0 -= this->speed;
     this->secondLine->x0 -= this->speed;
@@ -105,29 +100,24 @@ BarrierStrip* new_BarrierStrip(int width, int maxWidthForBarrier, int y0) {
     BarrierStrip* barrierStrip = NULL;
     barrierStrip = malloc(sizeof(BarrierStrip));
 
-    barrierStrip->firstLine = NULL;
-    barrierStrip->firstLine = malloc(sizeof(BarrierLine));
-    
-    barrierStrip->secondLine = NULL;
-    barrierStrip->secondLine = malloc(sizeof(BarrierLine));
+    barrierStrip->firstLine = new_BarrierLine();
+    barrierStrip->secondLine = new_BarrierLine();
 
-    barrierStrip->firstLine->barriers = NULL;
-    barrierStrip->firstLine->barriers = malloc(sizeof(Barrier) * maxWidthForBarrier / 20);
-
-    barrierStrip->secondLine->barriers = NULL;
-    barrierStrip->secondLine->barriers = malloc(sizeof(Barrier) * maxWidthForBarrier / 20);
+    barrierStrip->firstLine->barriers = new_Barrier(sizeof(Barrier) * maxWidthForBarrier / 20);
+    barrierStrip->secondLine->barriers = new_Barrier(sizeof(Barrier) * maxWidthForBarrier / 20);
 
     barrierStrip->width = width;
-    barrierStrip->speed = 1;
+    barrierStrip->speed = 3.0;
     barrierStrip->distance = 0;
-
-    barrierStrip->firstLine->x0 = width;
-    barrierStrip->secondLine->x0 = 2 * width;
-    barrierStrip->firstLine->coun = 0;
-    barrierStrip->secondLine->coun = 0;
     barrierStrip->start = start;
     barrierStrip->y0 = y0;
     barrierStrip->size = 2;
+
+    barrierStrip->firstLine->x0 = width;
+    barrierStrip->firstLine->coun = 0;
+
+    barrierStrip->secondLine->x0 = 2 * width;
+    barrierStrip->secondLine->coun = 0;
 
     return barrierStrip;
 }

@@ -5,3 +5,5 @@ typedef struct Barrier {
   int x0;
   int y0;
 } Barrier;
+
+Barrier* new_Barrier(int size);

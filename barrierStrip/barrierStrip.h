@@ -1,23 +1,19 @@
 #include <SDL2/SDL.h>
 
-#include "../barrier/barrier.h"
-
-typedef struct BarrierLine {
-    struct Barrier * barriers;
-    int x0;
-    int coun;
-} BarrierLine;
+#include "./barrier/barrier.h"
+#include "./barrierLine/barrierLine.h"
 
 typedef struct BarrierStrip {
     struct BarrierLine *firstLine;
     struct BarrierLine *secondLine;
 
     int width;
-    int speed;
     int maxWidthForBarrier;
     int distance;
     int y0;
     int size;
+
+    float speed;
 
     void (*start)(struct BarrierStrip*, SDL_Renderer*, int maxWidth);
 } BarrierStrip;

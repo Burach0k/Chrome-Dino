@@ -13,11 +13,9 @@ typedef struct Dino {
     void (*jump)(struct Dino *);
     int step;
     int pictureSize;
-    int x0;
-    int y0;
     int speed;
-    int height;
-    int width;
+    int x0, y0;
+    int height, width;
     int* picture;
     float jumpValue;
     Event event;

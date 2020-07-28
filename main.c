@@ -15,9 +15,7 @@ int main(int argc, char **argv) {
     SDL_Window *window = SDL_CreateWindow("Dino", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL);
     srand(time(NULL));
 
-    Canvas *canvas;
-    canvas = malloc(sizeof(Canvas));
-    canvas = new_Canvas(window);
+    Canvas *canvas = new_Canvas(window);
 
     canvas->render(canvas);
 

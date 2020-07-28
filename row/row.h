@@ -2,14 +2,11 @@
 
 typedef struct Row {
     void (*start)(struct Row *, SDL_Renderer *);
-    int rowWidth;
     int pictureSize;
-    int *firstRow;
-    int *secondRow;
-    int stepForFirstRow;
-    int stepForSecondRow;
-    int rowHeight;
-    int rowStep;
+    int *firstRow, *secondRow;
+    int stepForFirstRow, stepForSecondRow;
+    int height, width;
+    float step;
 } Row;
 
 Row* new_Row(int windowWidth, int pictureSize);

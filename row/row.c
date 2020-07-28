@@ -4,23 +4,20 @@
 
 typedef struct Row {
     void (*start)(struct Row *, SDL_Renderer *);
-    int rowWidth;
     int pictureSize;
-    int *firstRow;
-    int *secondRow;
-    int stepForFirstRow;
-    int stepForSecondRow;
-    int rowHeight;
-    int rowStep;
+    int *firstRow, *secondRow;
+    int stepForFirstRow, stepForSecondRow;
+    int height, width;
+    float step;
 } Row;
 
 static void createNewRow(struct Row *row, int * focusRow) {
-    for(int x = 0; x < row->rowWidth / 20; x++) {
+    for(int x = 0; x < row->width / 20; x++) {
         int getRandomRow = rand() % (3 - 1 + 1) + 1;
 
-        for (int y = 0; y < row->rowHeight; y++) {
+        for (int y = 0; y < row->height; y++) {
             for (int w = 0; w < 20; w++) {
-                int cellPosition = x * 20 + y * row->rowWidth + w;
+                int cellPosition = x * 20 + y * row->width + w;
 
                 if (getRandomRow == 1) {
                     *(focusRow + cellPosition) = row1[y][w];
@@ -35,42 +32,42 @@ static void createNewRow(struct Row *row, int * focusRow) {
 }
 
 static void start(struct Row *row, SDL_Renderer* renderer) {
-    drowPicture(renderer, row->firstRow, row->stepForFirstRow, 160, row->pictureSize, row->rowWidth, row->rowHeight);
-    drowPicture(renderer, row->secondRow, row->stepForSecondRow, 160, row->pictureSize, row->rowWidth, row->rowHeight);
+    drowPicture(renderer, row->firstRow, row->stepForFirstRow, 160, row->pictureSize, row->width, row->height);
+    drowPicture(renderer, row->secondRow, row->stepForSecondRow, 160, row->pictureSize, row->width, row->height);
 
-    if (row->stepForFirstRow <= - row->rowWidth) {
+    if (row->stepForFirstRow <= - row->width) {
         createNewRow(row, row->firstRow);
-        row->stepForFirstRow = row->rowWidth;
+        row->stepForFirstRow = row->width;
     }
 
-    if (row->stepForSecondRow <= - row->rowWidth) {
+    if (row->stepForSecondRow <= - row->width) {
         createNewRow(row, row->secondRow);
-        row->stepForSecondRow = row->rowWidth;
+        row->stepForSecondRow = row->width;
     }
 
-    row->stepForFirstRow -= row->rowStep;
-    row->stepForSecondRow -= row->rowStep;
+    row->stepForFirstRow -= row->step;
+    row->stepForSecondRow -= row->step;
 }
 
 Row* new_Row(int windowWidth, int pictureSize) {
     Row *row = NULL;
     row = malloc(sizeof(Row));
 
-    int rowWidth =  windowWidth / pictureSize + 1;
+    int width =  windowWidth / pictureSize + 1;
 
     int *firstRow = NULL;
     int *secondRow = NULL;
 
-    row->rowHeight = 15;
-    firstRow = malloc(rowWidth * row->rowHeight * sizeof(int));
-    secondRow = malloc(rowWidth * row->rowHeight * sizeof(int));
+    row->height = 15;
+    firstRow = malloc(width * row->height * sizeof(int));
+    secondRow = malloc(width * row->height * sizeof(int));
 
     row->stepForFirstRow = 0;
-    row->stepForSecondRow = rowWidth;
-    row->rowStep = 2;
+    row->stepForSecondRow = width;
+    row->step = 3.0;
     row->firstRow = firstRow;
     row->secondRow = secondRow;
-    row->rowWidth = rowWidth;
+    row->width = width;
     row->pictureSize = pictureSize;
     row->start = start;
 
