@@ -2,20 +2,22 @@
 
 #include "../barrier/barrier.h"
 
-typedef struct BarrierStrip {
-    struct Barrier * firstBarriers;
-    int firstBarriersPosition;
-    int counFirstBarriers;
+typedef struct BarrierLine {
+    struct Barrier * barriers;
+    int x0;
+    int coun;
+} BarrierLine;
 
-    struct Barrier * secondBarriers;
-    int secondBarriersPosition;
-    int counSecondBarriers;
+typedef struct BarrierStrip {
+    struct BarrierLine *firstLine;
+    struct BarrierLine *secondLine;
 
     int width;
     int speed;
     int maxWidthForBarrier;
     int distance;
     int y0;
+    int size;
 
     void (*start)(struct BarrierStrip*, SDL_Renderer*, int maxWidth);
 } BarrierStrip;

@@ -33,31 +33,26 @@ void drowPicture(SDL_Renderer *renderer, const int *picture, int x0, int y0, int
 static bool checkIntersection(struct BarrierStrip* bs, struct Barrier * barriers, int x0, int count, struct Dino* dino) {
     for(int i = 0; i < count; i++) {
         int barrierPosition = x0 + (barriers + i)->x0;
-        int dispersion = dino->width + dino->speed;
 
-        if ((barrierPosition - dino->x0 < dispersion)) {
+        if (barrierPosition <= dino->x0 + dino->width && barrierPosition >= dino->x0) {
             int barrierWidth = (barriers + i)->width;
             int barrierHeight = (barriers + i)->height;
 
             for(int w = 0; w < barrierWidth; w++) {
                 for(int h = 0; h < barrierHeight; h++) {
                     int cell = *((barriers + i)->picture + w + h * (barriers + i)->width);
-                    bool pointRightOfDino = barrierPosition + w > dino->x0;
-                    bool pointLeftOfDino = barrierPosition + cell < dino->x0 + dino->width;
 
                     if (cell != 0) {
-                        if (pointRightOfDino && pointLeftOfDino) {
-                            bool pointTopOfDino = bs->y0 - h >= dino->y0;
-                            bool pointBottomOfDino = bs->y0 - h <= dino->y0 + dino->height;
+                        bool pointTopOfDino = (barriers + i)->y0 + h >= dino->y0;
+                        bool pointBottomOfDino = (barriers + i)->y0 + h <= dino->y0 + dino->height;
 
-                            if (pointTopOfDino && pointBottomOfDino) {
-                                int x = (barrierPosition + w - dino->x0) / dino->pictureSize;
-                                int y = ((barriers + i)->y0 + h - dino->y0) / dino->pictureSize;
+                        if (pointTopOfDino && pointBottomOfDino) {
+                            int x = (barrierPosition + w * bs->size - dino->x0) / dino->pictureSize;
+                            int y = ((barriers + i)->y0 + h* bs->size - dino->y0) / dino->pictureSize;
 
-                                if (x <= dino->width && y <= dino->height) {
-                                    if (*(dino->picture + x + y * dino->height) == 1 ) {
-                                        return true;
-                                    }
+                            if (x <= (dino->width / dino->pictureSize) && y <= (dino->height / dino->pictureSize)) {
+                                if (*(dino->picture + x + y * (dino->height / dino->pictureSize)) == 1 ) {
+                                    return true;
                                 }
                             }
                         }
@@ -121,19 +116,19 @@ static void render(struct Canvas * canvas) {
                 barrierStrip->start(barrierStrip, renderer, 200);
                 dino->start(dino, renderer);
 
-                if (barrierStrip->firstBarriersPosition < barrierStrip->width) {
+                if (barrierStrip->firstLine->x0 < barrierStrip->width) {
                     isCrossing = checkIntersection(
                         barrierStrip,
-                        barrierStrip->firstBarriers,
-                        barrierStrip->firstBarriersPosition,
-                        barrierStrip->counFirstBarriers,
+                        barrierStrip->firstLine->barriers,
+                        barrierStrip->firstLine->x0,
+                        barrierStrip->firstLine->coun,
                         dino);
-                } else if (barrierStrip->secondBarriersPosition < barrierStrip->width) {
+                } else if (barrierStrip->secondLine->x0 < barrierStrip->width) {
                     isCrossing = checkIntersection(
                         barrierStrip,
-                        barrierStrip->secondBarriers,
-                        barrierStrip->secondBarriersPosition,
-                        barrierStrip->counSecondBarriers,
+                        barrierStrip->secondLine->barriers,
+                        barrierStrip->secondLine->x0,
+                        barrierStrip->secondLine->coun,
                         dino);
                 }
                 
