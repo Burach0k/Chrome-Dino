@@ -1,4 +1,6 @@
-#include "SDL2/SDL.h"
+#include <SDL2/SDL.h>
+#include <math.h>
+
 #include "../viwe/row/row.h"
 #include "../canvas/canvas.h"
 

@@ -6,6 +6,7 @@
 #include "../dino/dino.h"
 #include "../row/row.h"
 #include "../barrierStrip/barrierStrip.h"
+#include "../counter/counter.h"
 
 typedef struct Canvas{
     void (*render)(struct Canvas *);
@@ -92,10 +93,12 @@ static void destroy(struct Dino *dino, struct Row *row, struct BarrierStrip * bs
 static void render(struct Canvas * this) {
     struct timeval start, stop;
     bool isCrossing = false;
+
     SDL_Renderer *renderer = SDL_CreateRenderer(this->window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     BarrierStrip * barrierStrip = new_BarrierStrip(800, 200, 175);
     Dino *dino = new_Dino(3, 100, 110);
     Row *row = new_Row(800, 1);
+    Counter *counter = new_Counter();
 
     gettimeofday(&start, NULL);
 
@@ -113,6 +116,7 @@ static void render(struct Canvas * this) {
                 row->start(row, renderer);
                 barrierStrip->start(barrierStrip, renderer, 200);
                 dino->start(dino, renderer);
+                counter->start(counter, renderer);
 
                 if (barrierStrip->firstLine->x0 < barrierStrip->width) {
                     isCrossing = checkIntersection(

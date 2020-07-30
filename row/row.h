@@ -1,4 +1,4 @@
-#include "SDL2/SDL.h"
+#include <SDL2/SDL.h>
 
 typedef struct Row {
     void (*start)(struct Row *, SDL_Renderer *);
