@@ -24,17 +24,18 @@ typedef struct Dino {
 static void start(struct Dino *dino, SDL_Renderer* renderer) {
     if (dino->event == JUMP) {
         dino->jump(dino);
-    }
+    } else {
 
-    if (dino->step < dino->speed) {
-        dino->picture = *stayDino;
-    } else if (dino->step < dino->speed * 2) {
-        dino->picture = *runDino1;
-    } else if (dino->step < dino->speed * 3) {
-        dino->picture = *runDino2;
+        if (dino->step < dino->speed) {
+            dino->picture = *stayDino;
+        } else if (dino->step < dino->speed * 2) {
+            dino->picture = *runDino1;
+        } else if (dino->step < dino->speed * 3) {
+            dino->picture = *runDino2;
 
-        if (dino->step == dino->speed * 3 - 1) {
-            dino->step = 0;
+            if (dino->step == dino->speed * 3 - 1) {
+                dino->step = 0;
+            }
         }
     }
 
@@ -52,6 +53,9 @@ static void jump(struct Dino *dino) {
     } else {
         dino->jumpValue += 0.5;
     }
+
+    dino->picture = *stayDino;
+    dino->step = 0;
 }
 
 Dino* new_Dino(int pictureSize, int x0, int y0) {

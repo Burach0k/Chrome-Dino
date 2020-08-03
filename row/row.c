@@ -47,8 +47,17 @@ static void start(struct Row *row, SDL_Renderer* renderer) {
         row->stepForSecondRow = row->width;
     }
 
-    row->stepForFirstRow -= row->step;
-    row->stepForSecondRow -= row->step;
+    if (row->stepForFirstRow <= 0) {
+        row->stepForFirstRow -= row->step + 1;
+    } else {
+        row->stepForFirstRow -= row->step;
+    }
+
+    if (row->stepForSecondRow <= 0) {
+        row->stepForSecondRow -= row->step + 1;
+    } else {
+        row->stepForSecondRow -= row->step;
+    }
 }
 
 Row* new_Row(int windowWidth, int pictureSize) {

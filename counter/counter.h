@@ -2,6 +2,7 @@
 
 typedef struct Counter {
     int count;
+    int x, y;
     void (*start)(struct Counter*, SDL_Renderer*);
 } Counter;
 

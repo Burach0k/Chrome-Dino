@@ -5,6 +5,7 @@
 
 typedef struct Counter {
     int count;
+    int x, y;
     void (*start)(struct Counter*, SDL_Renderer*);
 } Counter;
 
@@ -37,33 +38,35 @@ static void start(struct Counter*  this, SDL_Renderer* renderer) {
     
     if (this->count > 9999) {
         int num = (this->count / 10000) % 10;
-        drowPicture(renderer, getImgForNumber(num), 0, 0, 3, 4, 5);
+        drowPicture(renderer, getImgForNumber(num), this->x, this->y, 3, 4, 5);
     }
     if (this->count > 999) {
         int num = (this->count / 1000) % 10;
-        drowPicture(renderer, getImgForNumber(num), 15, 0, 3, 4, 5);
+        drowPicture(renderer, getImgForNumber(num), this->x + 15, this->y, 3, 4, 5);
     }
     if (this->count > 99) {
         int num = (this->count / 100) % 10;
-        drowPicture(renderer, getImgForNumber(num), 30, 0, 3, 4, 5);
+        drowPicture(renderer, getImgForNumber(num), this->x + 30, this->y, 3, 4, 5);
     }
     if (this->count > 9) {
         int num = (this->count / 10) % 10;
-        drowPicture(renderer, getImgForNumber(num), 45, 0, 3, 4, 5);
+        drowPicture(renderer, getImgForNumber(num), this->x + 45, this->y, 3, 4, 5);
     }
 
     int num = this->count % 10;
-    drowPicture(renderer, getImgForNumber(num), 60, 0, 3, 4, 5);
+    drowPicture(renderer, getImgForNumber(num), this->x + 60, this->y, 3, 4, 5);
 
     this->count++;
 }
 
-Counter* new_Counter() {
+Counter* new_Counter(int x, int y) {
     Counter* counter = NULL;
     counter = malloc(sizeof(Counter));
 
     counter->start = start;
     counter->count = 0;
+    counter->x = x;
+    counter->y = y;
 
     return counter;
 }

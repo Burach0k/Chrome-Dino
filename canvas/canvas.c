@@ -98,7 +98,7 @@ static void render(struct Canvas * this) {
     BarrierStrip * barrierStrip = new_BarrierStrip(800, 200, 175);
     Dino *dino = new_Dino(3, 100, 110);
     Row *row = new_Row(800, 1);
-    Counter *counter = new_Counter();
+    Counter *counter = new_Counter(600, 50);
 
     gettimeofday(&start, NULL);
 
@@ -133,6 +133,9 @@ static void render(struct Canvas * this) {
                         barrierStrip->secondLine->coun,
                         dino);
                 }
+
+                row->step += 0.0005;
+                barrierStrip->speed += 0.0005;
 
                 SDL_RenderPresent(renderer);
             }

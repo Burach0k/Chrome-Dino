@@ -92,8 +92,18 @@ static void start(struct BarrierStrip*  this, SDL_Renderer* renderer, int minWid
     renderBarriers(this->firstLine, this->size, renderer);
     renderBarriers(this->secondLine, this->size, renderer);
 
-    this->firstLine->x0 -= this->speed;
-    this->secondLine->x0 -= this->speed;
+
+    if (this->firstLine->x0 <= 0) {
+        this->firstLine->x0 -= this->speed + 1;
+    } else {
+        this->firstLine->x0 -= this->speed;
+    }
+
+    if (this->secondLine->x0 <= 0) {
+        this->secondLine->x0 -= this->speed + 1;
+    } else {
+        this->secondLine->x0 -= this->speed;
+    }
 }
 
 BarrierStrip* new_BarrierStrip(int width, int maxWidthForBarrier, int y0) {
