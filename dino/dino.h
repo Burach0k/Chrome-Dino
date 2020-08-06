@@ -2,12 +2,14 @@
 
 typedef enum Event {
     RUN,
-    JUMP
+    JUMP,
+    BENT_RUN
 } Event;
 
 typedef struct Dino {
     void (*start)(struct Dino *, SDL_Renderer *);
     void (*jump)(struct Dino *);
+    void (*defaultRun)(struct Dino *);
     int step;
     int pictureSize;
     int speed;

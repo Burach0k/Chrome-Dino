@@ -5,12 +5,14 @@
 
 typedef enum Event {
     RUN,
-    JUMP
+    JUMP,
+    BENT_RUN
 } Event;
 
 typedef struct Dino {
     void (*start)(struct Dino *, SDL_Renderer *);
     void (*jump)(struct Dino *);
+    void (*defaultRun)(struct Dino *);
     int step;
     int pictureSize;
     int speed;
@@ -22,21 +24,16 @@ typedef struct Dino {
 } Dino;
 
 static void start(struct Dino *dino, SDL_Renderer* renderer) {
-    if (dino->event == JUMP) {
-        dino->jump(dino);
-    } else {
 
-        if (dino->step < dino->speed) {
-            dino->picture = *stayDino;
-        } else if (dino->step < dino->speed * 2) {
-            dino->picture = *runDino1;
-        } else if (dino->step < dino->speed * 3) {
-            dino->picture = *runDino2;
+    switch(dino->event) {
+        case JUMP:
+            dino->jump(dino);
+            break;
 
-            if (dino->step == dino->speed * 3 - 1) {
-                dino->step = 0;
-            }
-        }
+        case BENT_RUN:
+        
+        default:
+            dino->defaultRun(dino);
     }
 
     drowPicture(renderer, dino->picture, dino->x0, dino->y0, dino->pictureSize, 20, 20);
@@ -58,6 +55,20 @@ static void jump(struct Dino *dino) {
     dino->step = 0;
 }
 
+static void defaultRun(struct Dino *dino) {
+    if (dino->step < dino->speed) {
+            dino->picture = *stayDino;
+        } else if (dino->step < dino->speed * 2) {
+            dino->picture = *runDino1;
+        } else if (dino->step < dino->speed * 3) {
+            dino->picture = *runDino2;
+
+            if (dino->step == dino->speed * 3 - 1) {
+                dino->step = 0;
+            }
+        }
+}
+
 Dino* new_Dino(int pictureSize, int x0, int y0) {
     Dino *dino = NULL;
     dino = malloc(sizeof(Dino));
@@ -74,6 +85,7 @@ Dino* new_Dino(int pictureSize, int x0, int y0) {
     dino->jumpValue = -10;
     dino->event = RUN;
     dino->picture = *stayDino;
+    dino->defaultRun = defaultRun;
 
     return dino;
 }

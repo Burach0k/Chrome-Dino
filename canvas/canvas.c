@@ -7,6 +7,7 @@
 #include "../row/row.h"
 #include "../barrierStrip/barrierStrip.h"
 #include "../counter/counter.h"
+#include "../background/background.h"
 
 typedef struct Canvas{
     void (*render)(struct Canvas *);
@@ -23,10 +24,13 @@ void drowPicture(SDL_Renderer *renderer, const int *picture, int x0, int y0, int
             SDL_Rect rect = { x0  + j*h, y0  + i*h, h, h };
 
             if(*(picture + i*sizex + j) == 1) {
-                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+                SDL_SetRenderDrawColor(renderer, 0, 0, 200, 255);
                 SDL_RenderFillRect(renderer, &rect);
             } else if (*(picture + i*sizex + j) == 2) {
                 SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
+                SDL_RenderFillRect(renderer, &rect);
+            } else if (*(picture + i*sizex + j) == 3) {
+                SDL_SetRenderDrawColor(renderer, 40, 40, 80, 0);
                 SDL_RenderFillRect(renderer, &rect);
             }
         }
@@ -42,6 +46,9 @@ static void eventListener(struct Canvas * this, struct Dino* dino) {
             switch(this->event.key.keysym.sym) {
                 case SDLK_UP:
                     dino->event = JUMP;
+                    break;
+                case SDLK_DOWN:
+                    dino->event = BENT_RUN;
                     break;
             }
         }
@@ -99,6 +106,7 @@ static void render(struct Canvas * this) {
     Dino *dino = new_Dino(3, 100, 110);
     Row *row = new_Row(800, 1);
     Counter *counter = new_Counter(600, 50);
+    Background *background = new_Background(600, 1);
 
     gettimeofday(&start, NULL);
 
@@ -113,6 +121,7 @@ static void render(struct Canvas * this) {
                 gettimeofday(&start, NULL);
                 SDL_RenderClear(renderer);
 
+                background->start(background, renderer);
                 row->start(row, renderer);
                 barrierStrip->start(barrierStrip, renderer, 200);
                 dino->start(dino, renderer);
